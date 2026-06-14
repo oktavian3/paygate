@@ -12,11 +12,13 @@ import { formatUsdc } from "@/lib/paygate-utils";
 
 export function DashboardClient({ initialRole }: { initialRole: Role }) {
   const [role, setRole] = useState<Role>(initialRole);
-  const deals = mockDeals.filter((deal) =>
-    role === "client"
-      ? deal.client === "0x22F82A9150e2c44964A5CeC3729d71f19a3667B8"
-      : deal.worker === "0x6C31eB8d5Fd4dA625196fF7d6e75B23bE8F9705c"
-  );
+  // @rep-empty — mock data stays only for preview; production uses on-chain query
+  const allDeals = role === "client"
+    ? mockDeals.filter((d) => d.client === "0x22F82A9150e2c44964A5CeC3729d71f19a3667B8")
+    : mockDeals.filter((d) => d.worker === "0x6C31eB8d5Fd4dA625196fF7d6e75B23bE8F9705c");
+  // START EMPTY STATE: hide mock data behind a flag so users see empty state by default
+  const SHOW_MOCK = false;
+  const deals = SHOW_MOCK ? allDeals : [];
   const locked = deals.reduce((sum, deal) => sum + deal.amount, 0);
 
   return (
@@ -56,7 +58,13 @@ export function DashboardClient({ initialRole }: { initialRole: Role }) {
           )}
         </div>
         <div className="grid gap-4">
-          {deals.map((deal) => <DealCard key={deal.id} deal={deal} role={role} />)}
+          {deals.length === 0 ? (
+            <div className="border border-passive p-6 text-center text-sm uppercase text-muted">
+              &gt; NO DEALS YET — INITIATE A NEW DEAL TO GET STARTED
+            </div>
+          ) : (
+            deals.map((deal) => <DealCard key={deal.id} deal={deal} role={role} />)
+          )}
         </div>
       </section>
     </AppShell>

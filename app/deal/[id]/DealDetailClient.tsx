@@ -126,7 +126,18 @@ export function DealDetailClient({ deal, role }: { deal: Deal; role: Role }) {
             <div className="text-3xl font-black text-accent">{formatUsdc(deal.amount)}</div>
             <div className="mt-2 text-sm uppercase text-muted">CURRENTLY LOCKED</div>
           </TerminalPanel>
-          {notice && <div className="border border-mint p-3 text-sm text-mint">{notice}</div>}
+          {notice && (
+            <a
+              className="block border border-mint p-4 text-sm text-mint no-underline hover:bg-mint hover:text-black"
+              href={explorerTxUrl(notice)}
+              rel="noreferrer"
+              target="_blank"
+            >
+              <div className="mb-1 text-xs uppercase text-mint">✓ TX CONFIRMED</div>
+              <div className="break-all font-bold">{notice.slice(0, 18)}...{notice.slice(-8)}</div>
+              <div className="mt-1 text-xs underline">click to view on ArcScan →</div>
+            </a>
+          )}
         </div>
       </div>
     </AppShell>

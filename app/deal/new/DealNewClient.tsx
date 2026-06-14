@@ -58,9 +58,10 @@ export function DealNewClient() {
         deadline: Math.floor(new Date(deadline).getTime() / 1000),
         deliverableHash: hash
       });
-      setNotice(`> DEAL_LOCKED ${formatUsdc(Number(amount))} IN ESCROW - TX: ${tx}`);
+      setNotice(tx);
     } catch {
-      setNotice(`> DEAL_DRAFT READY - ${formatUsdc(Number(amount))} - CONNECT WALLET TO BROADCAST`);
+      setNotice(null);
+      setError("TX FAILED — CONNECT WALLET AND TRY AGAIN");
     }
   }
 
@@ -140,7 +141,18 @@ export function DealNewClient() {
             {escrow.isPending ? "LOCKING..." : "CREATE + LOCK ESCROW"} <ArrowUpRight size={16} />
           </button>
           {error && <div className="border border-red p-3 text-sm text-red">&gt; {error}</div>}
-          {notice && <a className="border border-mint p-3 text-sm text-mint" href={explorerTxUrl()} rel="noreferrer" target="_blank">{notice}</a>}
+          {notice && (
+            <a
+              className="block border border-mint p-4 text-sm text-mint no-underline hover:bg-mint hover:text-black"
+              href={explorerTxUrl(notice)}
+              rel="noreferrer"
+              target="_blank"
+            >
+              <div className="mb-1 text-xs uppercase text-mint">✓ DEAL LOCKED</div>
+              <div className="break-all font-bold">{notice.slice(0, 18)}...{notice.slice(-8)}</div>
+              <div className="mt-1 text-xs underline">click to view on ArcScan →</div>
+            </a>
+          )}
         </div>
       </form>
     </AppShell>
