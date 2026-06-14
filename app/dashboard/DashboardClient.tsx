@@ -3,23 +3,18 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
+import { useAccount } from "wagmi";
 import { AppShell } from "@/components/paygate/AppShell";
 import { DealCard } from "@/components/paygate/DealCard";
 import { TerminalPanel } from "@/components/paygate/TerminalPanel";
-import { mockDeals } from "@/lib/paygate-data";
+import { useDeals } from "@/hooks/useDeals";
 import type { Role } from "@/lib/paygate-types";
 import { formatUsdc } from "@/lib/paygate-utils";
 
 export function DashboardClient({ initialRole }: { initialRole: Role }) {
   const [role, setRole] = useState<Role>(initialRole);
-  // @rep-empty — mock data stays only for preview; production uses on-chain query
-  const allDeals = role === "client"
-    ? mockDeals.filter((d) => d.client === "0x22F82A9150e2c44964A5CeC3729d71f19a3667B8")
-    : mockDeals.filter((d) => d.worker === "0x6C31eB8d5Fd4dA625196fF7d6e75B23bE8F9705c");
-  // START EMPTY STATE: hide mock data behind a flag so users see empty state by default
-  const SHOW_MOCK = false;
-  const deals = SHOW_MOCK ? allDeals : [];
-  const locked = deals.reduce((sum, deal) => sum + deal.amount, 0);
+  const { isConnected } = useAccount();
+  const { deals, locked, isLoading } = useDeals(role);
 
   return (
     <AppShell>
@@ -44,8 +39,8 @@ export function DashboardClient({ initialRole }: { initialRole: Role }) {
         </div>
       </div>
       <div className="grid gap-4 md:grid-cols-3">
-        <TerminalPanel title="ACTIVE DEALS"><div className="text-4xl font-black text-accent">{deals.length}</div></TerminalPanel>
-        <TerminalPanel title="LOCKED VALUE"><div className="text-3xl font-black text-accent sm:text-4xl">{formatUsdc(locked)}</div></TerminalPanel>
+        <TerminalPanel title="ACTIVE DEALS"><div className="text-4xl font-black text-accent">{isLoading ? "..." : deals.length}</div></TerminalPanel>
+        <TerminalPanel title="LOCKED VALUE"><div className="text-3xl font-black text-accent sm:text-4xl">{isLoading ? "..." : formatUsdc(locked)}</div></TerminalPanel>
         <TerminalPanel title="ARC NETWORK"><div className="text-sm uppercase">CHAIN_ID 5042002<br />RPC ONLINE</div></TerminalPanel>
       </div>
       <section className="mt-6">
@@ -58,7 +53,15 @@ export function DashboardClient({ initialRole }: { initialRole: Role }) {
           )}
         </div>
         <div className="grid gap-4">
-          {deals.length === 0 ? (
+          {!isConnected ? (
+            <div className="border border-passive p-6 text-center text-sm uppercase text-muted">
+              &gt; CONNECT WALLET TO VIEW YOUR DEALS
+            </div>
+          ) : isLoading ? (
+            <div className="border border-passive p-6 text-center text-sm uppercase text-muted">
+              &gt; LOADING DEALS FROM CHAIN...
+            </div>
+          ) : deals.length === 0 ? (
             <div className="border border-passive p-6 text-center text-sm uppercase text-muted">
               &gt; NO DEALS YET — INITIATE A NEW DEAL TO GET STARTED
             </div>
