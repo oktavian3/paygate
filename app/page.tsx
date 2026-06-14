@@ -7,6 +7,8 @@ export default function Home() {
     <main className="relative flex min-h-screen overflow-x-hidden bg-black text-foreground">
       <div className="absolute inset-0 bg-grid opacity-70" />
       <div className="absolute inset-0 scanlines" />
+      <div className="fluid-glow-1" style={{ top: '30%', left: '55%' }} />
+      <div className="fluid-glow-2" style={{ top: '60%', left: '30%' }} />
       <div className="relative z-10 flex min-h-screen w-full flex-col px-5 py-5 md:px-10">
         <header className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
           <div className="border border-accent px-3 py-2 text-sm font-black text-accent">PAYGATE / ARC</div>

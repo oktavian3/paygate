@@ -105,6 +105,50 @@ select {
   border-color: var(--accent);
 }
 
+/* ── glitch text ── */
 .glitch {
   text-shadow: 2px 0 #00ff88, -2px 0 #ff3b3b;
+}
+
+/* ── fluid cyberpunk glow ── */
+@keyframes fluid-glow {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+  33% { transform: translate(-40%, -60%) scale(1.3); opacity: 0.3; }
+  66% { transform: translate(-60%, -40%) scale(0.9); opacity: 0.5; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+}
+
+@keyframes fluid-glow-2 {
+  0% { transform: translate(50%, 50%) scale(1); opacity: 0.25; }
+  33% { transform: translate(40%, 60%) scale(1.2); opacity: 0.35; }
+  66% { transform: translate(60%, 40%) scale(0.8); opacity: 0.2; }
+  100% { transform: translate(50%, 50%) scale(1); opacity: 0.25; }
+}
+
+.fluid-glow-1 {
+  position: absolute;
+  width: 60vw;
+  height: 60vw;
+  max-width: 700px;
+  max-height: 700px;
+  border-radius: 0;
+  background: radial-gradient(circle at center, rgba(0, 255, 136, 0.25) 0%, rgba(173, 255, 47, 0.08) 40%, transparent 70%);
+  filter: blur(60px);
+  animation: fluid-glow 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.fluid-glow-2 {
+  position: absolute;
+  width: 50vw;
+  height: 50vw;
+  max-width: 500px;
+  max-height: 500px;
+  border-radius: 0;
+  background: radial-gradient(circle at center, rgba(255, 59, 59, 0.2) 0%, rgba(255, 59, 59, 0.05) 40%, transparent 70%);
+  filter: blur(80px);
+  animation: fluid-glow-2 10s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
 }
