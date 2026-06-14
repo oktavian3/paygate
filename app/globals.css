@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #f5f5f5;
+  --accent: #adff2f;
+  --muted: #888888;
+  --passive: #333333;
+  --red: #ff3b3b;
+  --mint: #00ff88;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-black: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --color-passive: var(--passive);
+  --color-red: var(--red);
+  --color-mint: var(--mint);
+  --font-mono: var(--font-jetbrains-mono);
+  --font-sans: var(--font-jetbrains-mono);
+}
+
+* {
+  box-sizing: border-box;
+  border-radius: 0 !important;
+}
+
+html,
+body {
+  overflow-x: hidden;
+  background: var(--background);
+  color: var(--foreground);
+  color-scheme: dark;
+}
+
+body {
+  min-width: 320px;
+  font-family: var(--font-jetbrains-mono), "IBM Plex Mono", ui-monospace, monospace;
+  letter-spacing: 0;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--background);
+}
+
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(173, 255, 47, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(173, 255, 47, 0.09) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.scanlines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.035),
+    rgba(255, 255, 255, 0.035) 1px,
+    transparent 1px,
+    transparent 5px
+  );
+  mix-blend-mode: screen;
+  opacity: 0.18;
+}
+
+.brutal-button {
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  text-transform: uppercase;
+  transition: background-color 120ms linear, color 120ms linear;
+}
+
+.brutal-button:hover,
+.brutal-button.active {
+  background: var(--accent);
+  color: var(--background);
+}
+
+.brutal-button:disabled {
+  cursor: not-allowed;
+  border-color: var(--passive);
+  color: var(--muted);
+}
+
+.brutal-input {
+  width: 100%;
+  border: 1px solid var(--passive);
+  background: #050505;
+  color: var(--foreground);
+  outline: none;
+}
+
+.brutal-input:focus {
+  border-color: var(--accent);
+}
+
+.glitch {
+  text-shadow: 2px 0 #00ff88, -2px 0 #ff3b3b;
+}
