@@ -24,6 +24,14 @@ export const CCTP_BRIDGE_URL = "https://developers.circle.com/cctp";
 
 export const payGateEscrowAbi = [
   {
+    type: "constructor",
+    inputs: [
+      { name: "usdcAddress", type: "address", internalType: "address" },
+      { name: "initialOwner", type: "address", internalType: "address" }
+    ],
+    stateMutability: "nonpayable"
+  },
+  {
     type: "function", name: "createDeal", stateMutability: "nonpayable",
     inputs: [
       { name: "worker", type: "address" },
@@ -62,6 +70,33 @@ export const payGateEscrowAbi = [
     type: "function", name: "getDeliverableHash", stateMutability: "view",
     inputs: [{ name: "dealId", type: "uint256" }],
     outputs: [{ name: "", type: "bytes32" }]
+  },
+  {
+    type: "function", name: "nextDealId", stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }]
+  },
+  {
+    type: "function", name: "deals", stateMutability: "view",
+    inputs: [{ name: "", type: "uint256" }],
+    outputs: [
+      { name: "client", type: "address" },
+      { name: "worker", type: "address" },
+      { name: "amount", type: "uint256" },
+      { name: "mode", type: "uint8" },
+      { name: "deadline", type: "uint256" },
+      { name: "deliverableHash", type: "bytes32" },
+      { name: "status", type: "uint8" },
+      { name: "workerSubmitted", type: "bool" },
+      { name: "clientApproved", type: "bool" },
+      { name: "createdAt", type: "uint256" },
+      { name: "disputeRaisedAt", type: "uint256" }
+    ]
+  },
+  {
+    type: "function", name: "owner", stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "address" }]
   }
 ] as const;
 
