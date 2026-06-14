@@ -54,6 +54,7 @@ select {
   color: var(--background);
 }
 
+/* ── grid background ── */
 .bg-grid {
   background-image:
     linear-gradient(rgba(173, 255, 47, 0.09) 1px, transparent 1px),
@@ -61,6 +62,7 @@ select {
   background-size: 32px 32px;
 }
 
+/* ── scanlines overlay ── */
 .scanlines {
   background-image: repeating-linear-gradient(
     to bottom,
@@ -73,6 +75,7 @@ select {
   opacity: 0.18;
 }
 
+/* ── brutalist button ── */
 .brutal-button {
   border: 1px solid var(--accent);
   background: transparent;
@@ -105,6 +108,57 @@ select {
   border-color: var(--accent);
 }
 
+/* ── glitch text ── */
 .glitch {
   text-shadow: 2px 0 #00ff88, -2px 0 #ff3b3b;
 }
+
+/* ── typewriter cursor ── */
+.typing-cursor::after {
+  content: "▊";
+  display: inline;
+  animation: blink-cursor 1s step-end infinite;
+  color: var(--accent);
+}
+
+@keyframes blink-cursor {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* ── typewriter container hides overflow ── */
+.typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+  display: inline-block;
+  max-width: 100%;
+}
+
+/* ── glitch animation ── */
+@keyframes glitch-skew {
+  0% { transform: skew(0deg); }
+  20% { transform: skew(-1deg); }
+  40% { transform: skew(0.5deg); }
+  60% { transform: skew(-0.3deg); }
+  80% { transform: skew(0.8deg); }
+  100% { transform: skew(0deg); }
+}
+
+.animate-glitch {
+  animation: glitch-skew 3s infinite alternate;
+}
+
+/* ── fade in up ── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-fade-up-delay-1 { animation-delay: 0.2s; }
+.animate-fade-up-delay-2 { animation-delay: 0.4s; }
+.animate-fade-up-delay-3 { animation-delay: 0.6s; }
