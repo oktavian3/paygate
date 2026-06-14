@@ -1,34 +1,28 @@
-"use client";
-
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { SysTime } from "@/components/paygate/SysTime";
-import { useTypewriter } from "@/hooks/useTypewriter";
 
 export default function Home() {
-  const line1 = useTypewriter("PAYMENT PROTOCOL", 40);
-  const line2 = useTypewriter("FOR WEB3 WORKERS", 40, "PAYMENT PROTOCOL".length * 40 + 600);
-
   return (
     <main className="relative flex min-h-screen overflow-x-hidden bg-black text-foreground">
       <div className="absolute inset-0 bg-grid opacity-70" />
       <div className="absolute inset-0 scanlines" />
       <div className="relative z-10 flex min-h-screen w-full flex-col px-5 py-5 md:px-10">
         <header className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
-          <div className="animate-fade-up border border-accent px-3 py-2 text-sm font-black text-accent">PAYGATE / ARC</div>
-          <div className="animate-fade-up animate-fade-up-delay-1"><SysTime /></div>
+          <div className="border border-accent px-3 py-2 text-sm font-black text-accent">PAYGATE / ARC</div>
+          <SysTime />
         </header>
         <section className="flex flex-1 items-center py-10">
           <div className="w-full min-w-0 max-w-6xl">
-            <div className="animate-fade-up mb-4 text-sm uppercase text-muted">&gt; <span className="typing-cursor">ESCROW_KERNEL_READY</span></div>
-            <h1 className="animate-glitch max-w-[340px] text-[32px] font-black uppercase leading-[0.95] text-accent sm:max-w-5xl sm:text-5xl md:text-8xl">
-              <span className="block typewriter">{line1}</span>
-              <span className="block typewriter">{line2}</span>
+            <div className="mb-4 text-sm uppercase text-muted">&gt; ESCROW_KERNEL_READY</div>
+            <h1 className="glitch max-w-[340px] text-[32px] font-black uppercase leading-[0.95] text-accent sm:max-w-5xl sm:text-5xl md:text-8xl">
+              <span className="block">PAYMENT PROTOCOL</span>
+              <span className="block">FOR WEB3 WORKERS</span>
             </h1>
-            <p className="animate-fade-up animate-fade-up-delay-2 mt-6 max-w-[340px] break-words text-base uppercase sm:max-w-3xl md:text-2xl">
+            <p className="mt-6 max-w-[340px] break-words text-base uppercase sm:max-w-3xl md:text-2xl">
               Escrow. Milestones. Dispute resolution. Built on Arc.
             </p>
-            <div className="animate-fade-up animate-fade-up-delay-3 mt-8 flex w-full max-w-[340px] flex-col gap-3 sm:max-w-none sm:flex-row">
+            <div className="mt-8 flex w-full max-w-[340px] flex-col gap-3 sm:max-w-none sm:flex-row">
               <Link className="brutal-button inline-flex w-full items-center justify-center gap-2 px-5 py-4 text-sm font-bold sm:w-auto" href="/dashboard?role=client">
                 START AS CLIENT <ArrowUpRight size={16} />
               </Link>
@@ -38,7 +32,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <div className="animate-fade-up grid border-t border-passive pt-4 text-xs uppercase text-muted md:grid-cols-4">
+        <div className="grid border-t border-passive pt-4 text-xs uppercase text-muted md:grid-cols-4">
           <span>CHAIN: ARC_TESTNET</span>
           <span>GAS: USDC</span>
           <span>MODE_A / MODE_B / MODE_C</span>
