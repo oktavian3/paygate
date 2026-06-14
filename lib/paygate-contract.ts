@@ -19,7 +19,7 @@ export const arcTestnet = defineChain({
 export const USDC_ADDRESS = "0x3600000000000000000000000000000000000000" as const;
 export const PAYGATE_ESCROW_ADDRESS =
   (process.env.NEXT_PUBLIC_PAYGATE_ESCROW_ADDRESS as `0x${string}` | undefined) ??
-  "0x0000000000000000000000000000000000000000";
+  "0x490EC56656000Bd671CD1E9d309d8cdbdeFAAFb0";
 export const CCTP_BRIDGE_URL = "https://developers.circle.com/cctp";
 
 export const payGateEscrowAbi = [
