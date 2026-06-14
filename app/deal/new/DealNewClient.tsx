@@ -40,12 +40,14 @@ export function DealNewClient() {
   const [error, setError] = useState<string>();
   const hash = useMemo(() => calculateDeliverableHash(deliverables), [deliverables]);
   const validAddress = validateWalletAddress(workerAddress);
+  const selfAddress = workerAddress.toLowerCase() === escrow.address?.toLowerCase();
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(undefined);
     setNotice(undefined);
     if (!validAddress) return setError("WORKER WALLET ADDRESS IS INVALID");
+    if (selfAddress) return setError("CANNOT CREATE DEAL WITH YOURSELF — USE A DIFFERENT WORKER ADDRESS");
     if (!workerName.trim() || !Number(amount) || !deadline || !deliverables.some((item) => item.text.trim())) {
       return setError("ALL REQUIRED FIELDS MUST BE COMPLETE");
     }
@@ -59,9 +61,9 @@ export function DealNewClient() {
         deliverableHash: hash
       });
       setNotice(tx);
-    } catch {
-      setNotice(null);
-      setError("TX FAILED — CONNECT WALLET AND TRY AGAIN");
+    } catch (err) {
+      setNotice(undefined);
+      setError("TX FAILED — CHECK WORKER ADDRESS AND TRY AGAIN");
     }
   }
 
