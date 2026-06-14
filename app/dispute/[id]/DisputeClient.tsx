@@ -1,34 +1,74 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Plus, Send, Trash2 } from "lucide-react";
+import { useReadContract } from "wagmi";
+import { useAccount } from "wagmi";
 import { AppShell } from "@/components/paygate/AppShell";
 import { TerminalPanel } from "@/components/paygate/TerminalPanel";
 import { useDispute } from "@/hooks/useDispute";
-import type { Deal, Role } from "@/lib/paygate-types";
+import { PAYGATE_ESCROW_ADDRESS, payGateEscrowAbi } from "@/lib/paygate-contract";
+import type { Role } from "@/lib/paygate-types";
 import { formatUsdc } from "@/lib/paygate-utils";
 
-const resolutions = [
-  "FULL RELEASE TO ME",
-  "FULL RELEASE TO OTHER PARTY",
-  "REQUEST 50/50 SPLIT"
-];
+const resolutions = ["FULL RELEASE TO ME", "FULL RELEASE TO OTHER PARTY", "REQUEST 50/50 SPLIT"];
+const statusMap = ["ACTIVE", "PENDING_DELIVERY", "IN_DISPUTE", "COMPLETED", "AUTO_RELEASED", "CANCELLED"] as const;
 
-export function DisputeClient({ deal, role }: { deal: Deal; role: Role }) {
+function parseDealId(id: string): bigint | null {
+  const num = id.replace("DEAL_", "");
+  const n = Number(num);
+  return Number.isFinite(n) && n > 0 ? BigInt(n) : null;
+}
+
+export function DisputeClient({ dealId, initialRole }: { dealId: string; initialRole: Role }) {
+  const account = useAccount();
   const dispute = useDispute();
   const [claim, setClaim] = useState("");
   const [urls, setUrls] = useState([""]);
   const [resolution, setResolution] = useState(resolutions[0]);
   const [notice, setNotice] = useState<string>();
-  const events = deal.disputeEvents ?? [{
-    actor: role.toUpperCase(),
-    label: "READY TO RAISE",
-    timestamp: "AWAITING SIGNATURE",
-    detail: "No dispute is currently recorded for this deal."
-  }];
+
+  const onChainId = useMemo(() => parseDealId(dealId), [dealId]);
+
+  const { data: rawDeal, isLoading } = useReadContract({
+    address: PAYGATE_ESCROW_ADDRESS,
+    abi: payGateEscrowAbi,
+    functionName: "deals",
+    args: onChainId ? [onChainId] : undefined,
+    query: { enabled: !!onChainId },
+  });
+
+  const deal = useMemo(() => {
+    if (!rawDeal) return null;
+    const d = rawDeal as readonly [`0x${string}`, `0x${string}`, bigint, number, bigint, `0x${string}`, number, boolean, boolean, bigint, bigint];
+    return {
+      onChainId: onChainId!,
+      client: d[0],
+      worker: d[1],
+      amount: Number(d[2]) / 1_000_000,
+      status: statusMap[d[6]] ?? "ACTIVE",
+    };
+  }, [rawDeal, onChainId]);
+
+  const role = useMemo((): Role => {
+    if (!deal || !account.address) return initialRole;
+    if (deal.client.toLowerCase() === account.address.toLowerCase()) return "client";
+    if (deal.worker.toLowerCase() === account.address.toLowerCase()) return "worker";
+    return initialRole;
+  }, [deal, account.address, initialRole]);
+
+  const events = [
+    {
+      actor: role.toUpperCase(),
+      label: deal?.status === "IN_DISPUTE" ? "DISPUTE OPEN" : "READY TO RAISE",
+      timestamp: deal?.status === "IN_DISPUTE" ? new Date().toISOString().slice(0, 10) : "AWAITING SIGNATURE",
+      detail: deal?.status === "IN_DISPUTE" ? "A dispute is currently active for this deal." : "No dispute is currently recorded for this deal."
+    }
+  ];
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!deal) return;
     try {
       const tx = await dispute.raiseDispute({
         dealId: deal.onChainId,
@@ -36,17 +76,33 @@ export function DisputeClient({ deal, role }: { deal: Deal; role: Role }) {
         evidenceUrls: urls.filter(Boolean),
         desiredResolution: resolution
       });
-      setNotice(`> DISPUTE_RAISED CONFIRMED - TX: ${tx}`);
+      setNotice(tx);
     } catch {
-      setNotice("> DISPUTE_PACKET READY - CONNECT DEPLOYED ESCROW TO BROADCAST");
+      setNotice(undefined);
     }
+  }
+
+  if (isLoading) {
+    return (
+      <AppShell>
+        <div className="border border-passive p-6 text-center text-sm uppercase text-muted">&gt; LOADING DEAL FROM CHAIN...</div>
+      </AppShell>
+    );
+  }
+
+  if (!deal) {
+    return (
+      <AppShell>
+        <div className="border border-passive p-6 text-center text-sm uppercase text-red">&gt; DEAL NOT FOUND</div>
+      </AppShell>
+    );
   }
 
   return (
     <AppShell>
       <div className="mb-6">
         <p className="text-sm uppercase text-muted">&gt; DISPUTE_TRACKING / {role.toUpperCase()}_VIEW</p>
-        <h1 className="mt-2 text-4xl font-black uppercase text-accent md:text-6xl">{deal.id}</h1>
+        <h1 className="mt-2 text-4xl font-black uppercase text-accent md:text-6xl">{dealId}</h1>
       </div>
       <div className="grid gap-5 lg:grid-cols-2">
         <TerminalPanel title="DISPUTE_TIMELINE">
@@ -91,7 +147,18 @@ export function DisputeClient({ deal, role }: { deal: Deal; role: Role }) {
               <div>FALLBACK: {formatUsdc(deal.amount / 2)} RELEASED TO EACH PARTY</div>
             </div>
           </TerminalPanel>
-          {notice && <div className="border border-mint p-3 text-sm text-mint">{notice}</div>}
+          {notice && (
+            <a
+              className="block border border-mint p-4 text-sm text-mint no-underline hover:bg-mint hover:text-black"
+              href={`https://testnet.arcscan.app/tx/${notice}`}
+              rel="noreferrer"
+              target="_blank"
+            >
+              <div className="mb-1 text-xs uppercase text-mint">✓ DISPUTE RAISED</div>
+              <div className="break-all font-bold">{notice.slice(0, 18)}...{notice.slice(-8)}</div>
+              <div className="mt-1 text-xs underline">click to view on ArcScan →</div>
+            </a>
+          )}
         </div>
       </div>
     </AppShell>
